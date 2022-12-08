@@ -1,0 +1,12 @@
+Start of execve call /sbin/ping:
+========================================
+PING google.com (142.250.187.206): 56 data bytes
+64 bytes from 142.250.187.206: icmp_seq=0 ttl=120 time=80.812 ms
+64 bytes from 142.250.187.206: icmp_seq=1 ttl=120 time=182.347 ms
+64 bytes from 142.250.187.206: icmp_seq=2 ttl=120 time=430.098 ms
+64 bytes from 142.250.187.206: icmp_seq=3 ttl=120 time=80.230 ms
+64 bytes from 142.250.187.206: icmp_seq=4 ttl=120 time=975.555 ms
+
+--- google.com ping statistics ---
+5 packets transmitted, 5 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 80.230/349.808/975.555/337.959 ms
