@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2022/12/08 13:38:01 by mgama            ###   ########.fr       */
+/*   Updated: 2022/12/09 17:11:53 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ t_commands parse_commands(char *argv[])
 	{
 		ft_printf("cmd1 %s\n", commands.command1[i]);
 	}
-	// ft_printf("file2 %s\n", commands.file2);
+	ft_printf("file2 %s\n", commands.file2);
 	// i = -1;
 	// while (commands.command2[++i])
 	// {
@@ -82,19 +82,28 @@ int	main(int argc, char *argv[], char *envp[])
 	// if (argc < 5 || argc > 5)
 	// 	return (1);
 	t_commands commands = parse_commands(argv);
-	// char	*command1 = "ping";
 	int		pid = fork();
+	int		fd[2];
 	
 	if (pid == -1)
 		return (1);
+	if (pipe(fd) == -1)
+		return (1);
+		
 	if (pid == 0)
 	{
-		int		file = open(commands.file1, O_WRONLY | O_CREAT, 0777);
+		close(fd[0]);
+		int		file = open(commands.file1, O_RDONLY, 0777);
 		if (file == -1)
 			return (1);
 		
-		dup2(file, 1);
+		if (dup2(file, STDIN_FILENO) < 0)
+			return (3);
 		close(file);
+		// if (dup2(STDOUT_FILENO, fd[1]) < 0)
+		if (dup2(fd[1], STDOUT_FILENO) < 0)
+			return (3);
+		close(fd[1]);
 		
 		char	*cmd = parse_env(envp, commands.command1[0]);
 		if (!cmd)
@@ -112,18 +121,69 @@ int	main(int argc, char *argv[], char *envp[])
 	}
 	else
 	{
-		int	wait_status;
-		
-		wait(&wait_status);
-		if (WIFEXITED(wait_status))
+		int		wait_status;
+		int		wait_status2;
+		int		pid2 = fork();
+		if (pid2 == -1)
+			return (1);
+
+		if (pid2 == 0)
 		{
-			int	wstatus = WEXITSTATUS(wait_status);
-			if (wstatus == 0)
-				ft_printf("Success!\n");
-			else if (wstatus == 2)
-				ft_printf("Could not find command\n");
-			else
-				ft_printf("Failure\n");
+			close(fd[1]);
+			int		output = open(commands.file2, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+			if (output == -1)
+				return (1);
+			
+			if (dup2(fd[0], STDIN_FILENO) < 0)
+				return (3);
+			close(fd[0]);
+			if (dup2(output, STDOUT_FILENO) < 0)
+				return (3);
+
+			char	*cmd = parse_env(envp, commands.command2[0]);
+			if (!cmd)
+				return (2);
+			
+			ft_printf("Start of execve call %s:\n", cmd);
+			ft_printf("========================================\n");
+			if (execve(cmd, commands.command2, envp) == -1)
+			{
+				perror("Could not execute execve");
+				return (1);
+			}
+		}
+		else
+		{
+			close(fd[0]);
+			close(fd[1]);
+			waitpid(pid, &wait_status, 0);
+			waitpid(pid2, &wait_status2, 0);
+			if (WIFEXITED(wait_status))
+			{
+				ft_printf("Cmd 1 -------------\n");
+				int	wstatus = WEXITSTATUS(wait_status);
+				if (wstatus == 0)
+					ft_printf("Success!\n");
+				else if (wstatus == 2)
+					ft_printf("Could not find command\n");
+				else if (wstatus == 3)
+					ft_printf("Could not dup\n");
+				else
+					ft_printf("Failure\n");
+			}
+			if (WIFEXITED(wait_status2))
+			{
+				ft_printf("Cmd 2 -------------\n");
+				int	wstatus = WEXITSTATUS(wait_status2);
+				if (wstatus == 0)
+					ft_printf("Success!\n");
+				else if (wstatus == 2)
+					ft_printf("Could not find command\n");
+				else if (wstatus == 3)
+					ft_printf("Could not dup\n");
+				else
+					ft_printf("Failure\n");
+			}
 		}
 	}
 	return (0);

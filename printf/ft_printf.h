@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ft_printf.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgama <mgama@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 13:33:45 by mgama             #+#    #+#             */
-/*   Updated: 2022/12/04 20:34:53 by mgama            ###   ########.fr       */
+/*   Updated: 2022/12/09 17:10:30 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_PRINTF_H
 # define FT_PRINTF_H
 
+# include <stdio.h>
 # include <unistd.h>
 # include <stdarg.h>
 # include <limits.h>
@@ -34,8 +35,6 @@ typedef struct s_flags
 
 /* printf */
 int		ft_printf(const char *fmt, ...);
-void	print_type(const char *fmt, va_list *argp, int *count);
-void	ft_switch_types(int type, va_list *argp, int *count, t_flags flags);
 
 /* print_width */
 void	ft_print_width(int width, int minus, int has_zero, int *count);
@@ -92,7 +91,6 @@ int		ft_is_valid_type(int c);
 int		ft_is_valid_flag(int c);
 
 /* flags */
-t_flags	ft_flags(void);
 void	ft_check_flags(const char *fmt, va_list *argp,
 			t_flags *flags, int *idx);
 void	ft_check_flags_identifiers(const char *fmt, va_list *argp,
@@ -136,4 +134,4 @@ char	*ft_put_base(unsigned long long ull_save, int base,
 			char *rtn, int count);
 char	*ft_convert_base(unsigned long long ull, int base);
 
-#endif
+#endif /* ft_printf_h */
