@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgama <mgama@student.42.fr>                +#+  +:+       +#+        */
+/*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:57 by mgama             #+#    #+#             */
-/*   Updated: 2022/12/05 17:19:24 by mgama            ###   ########.fr       */
+/*   Updated: 2022/12/12 16:17:52 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/wait.h>
+# include <signal.h>
 # include <errno.h>
 # include <fcntl.h>
 # include "../printf/ft_printf.h"
