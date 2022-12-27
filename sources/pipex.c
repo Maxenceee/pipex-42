@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2022/12/14 19:08:57 by mgama            ###   ########.fr       */
+/*   Updated: 2022/12/26 12:47:36 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,40 +41,26 @@ char	*parse_env(char *envp[], char *cmd)
 		if (access(path, F_OK) == 0)
 			return (path);
 	}
+	free(bins);
 	free(path);
-	return (0);
+	return (NULL);
 }
 
-t_commands parse_commands(char *argv[])
+void	parse_commands(t_commands *commands, char *argv[])
 {
 	int	i = 0;
-	t_commands	commands;
 	
 	while (argv[++i])
 	{
 		if (i == 1)
-			commands.file1 = argv[i];
+			commands->file1 = argv[i];
 		else if (i == 2)
-			commands.command1 = ft_split(argv[i], ' ');
+			commands->command1 = ft_split(argv[i], ' ');
 		else if (i == 3)
-			commands.command2 = ft_split(argv[i], ' ');
+			commands->command2 = ft_split(argv[i], ' ');
 		else if (i == 4)
-			commands.file2 = argv[i];
+			commands->file2 = argv[i];
 	}
-	/* print args paring result */
-	ft_printf("file1 %s\n", commands.file1);
-	i = -1;
-	while (commands.command1[++i])
-	{
-		ft_printf("cmd1 %s\n", commands.command1[i]);
-	}
-	ft_printf("file2 %s\n", commands.file2);
-	i = -1;
-	while (commands.command2[++i])
-	{
-		ft_printf("cmd2 %s\n", commands.command2[i]);
-	}
-	return (commands);
 }
 
 void	pipex_exit(int wait_status)
@@ -92,31 +78,31 @@ void	pipex_exit(int wait_status)
 		ft_printf("Failure\n");
 }
 
-void	read_pipe(int fdin)
+void	exit_with_code(t_commands *commands, int code)
 {
-	char	buffer[4096];
 	
-	if (read(fdin, buffer, sizeof(buffer)) < 0)
-		ft_printf("cannot read fd %d\n", fdin);
-	else
-		ft_printf("read fd %d: %s\t end read\n", fdin, buffer);
+	// free(commands->command1);
+	// free(commands->command2);
+	free(commands);
+	exit(code);
 }
 
 int	main(int argc, char *argv[], char *envp[])
 {
 	// if (argc < 5 || argc > 5)
 	// 	return (1);
-	t_commands commands = parse_commands(argv);
-	int		fd[2];
-	int		file;
-	char	*cmd;
+	t_commands	commands;
+	int			fd[2];
+	int			file;
+	char		*cmd;
 	
+	parse_commands(&commands, argv);
 	if (pipe(fd) == -1)
-		return (1);
+		exit_with_code(&commands, 1);
 		
 	pid_t	pid = fork();
 	if (pid == -1)
-		return (1);
+		exit_with_code(&commands, 1);
 	if (pid == 0)
 	{	
 		file = open(commands.file1, O_RDONLY);
@@ -146,11 +132,9 @@ int	main(int argc, char *argv[], char *envp[])
 	}
 	else
 	{
-		/* reading pipe */
-		// read_pipe(fd[0]);
 		pid_t	pid2 = fork();
 		if (pid2 == -1)
-			return (1);
+			exit_with_code(&commands, 1);
 
 		if (pid2 == 0)
 		{
@@ -185,23 +169,18 @@ int	main(int argc, char *argv[], char *envp[])
 		
 		waitpid(pid, &wait_status, 0);
 		if (WIFEXITED(wait_status))
-		{
-			ft_printf("Cmd 1 -------------\n");
 			pipex_exit(wait_status);
-		}
 		else if (WIFSIGNALED(wait_status))
 		{
 			ft_printf("Child exited via signal %d\n", WTERMSIG(wait_status));
-			return (1);
 		}
 		waitpid(pid2, &wait_status2, 0);
 		if (WIFEXITED(wait_status2))
-		{
-			ft_printf("Cmd 2 -------------\n");
 			pipex_exit(wait_status2);
-		}
 		else if (WIFSIGNALED(wait_status))
+		{
 			ft_printf("Child exited via signal %d\n", WTERMSIG(wait_status));
+		}
 	}
-	return (0);
+	exit_with_code(&commands, 0);
 }
