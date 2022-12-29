@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2022/12/29 15:03:50 by mgama            ###   ########.fr       */
+/*   Updated: 2022/12/29 17:29:47 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,30 +65,26 @@ void	parse_commands(t_commands *commands, char *argv[])
 
 void	pipex_exit(int wait_status)
 {
-	int	wstatus = WEXITSTATUS(wait_status);
-	if (wstatus == 0)
-		ft_printf("Success!\n");
-	else if (wstatus == 2)
-		ft_printf("Could not find command\n");
-	else if (wstatus == 3)
-		ft_printf("Could not dup\n");
-	else if (wstatus == 4)
-		ft_printf("Cannot open file\n");
-	else
-		ft_printf("Failure\n");
+	int	wstatus;
+	
+	if (WIFEXITED(wait_status))
+	{
+		wstatus = WEXITSTATUS(wait_status);
+		if (wstatus == 2)
+			ft_printf("Could not find command\n");
+		else if (wstatus == 3)
+			ft_printf("Could not dup\n");
+		else if (wstatus == 4)
+			ft_printf("Cannot open file\n");
+	}
+	else if (WIFSIGNALED(wait_status))
+		ft_printf("Child exited via signal %d\n", WTERMSIG(wait_status));
 }
 
 void	exit_with_code(t_commands *commands, int code)
 {
-	
 	int i;
-	// Libération des chaînes de caractères
-    // free(commands->path_command1);
-    // free(commands->file1);
-    // free(commands->path_command2);
-    // free(commands->file2);
 
-    // Libération des tableaux de chaînes de caractères
 	i = 0;
     while (commands->command1[i] != NULL)
         free(commands->command1[i++]);
@@ -97,11 +93,8 @@ void	exit_with_code(t_commands *commands, int code)
     while (commands->command2[i] != NULL)
         free(commands->command2[i++]);
     free(commands->command2);
-
-    // Libération de la structure elle-même
-    // free(commands);
-
-    // Quitter le programme avec le code donné
+	if (code > 0)
+		perror("An error occurred while executing the program");
     exit(code);
 }
 
@@ -115,7 +108,6 @@ int	execcmd(int fdin, int fdout, char **command, char *envp[])
 	if (dup2(fdout, STDOUT_FILENO) < 0)
 		return (3);
 	close(fdout);
-
 	cmd = parse_env(envp, command[0]);
 	if (!cmd)
 		return (2);
@@ -139,7 +131,7 @@ int	main(int argc, char *argv[], char *envp[])
 	parse_commands(&commands, argv);
 	if (pipe(fd) == -1)
 		exit_with_code(&commands, 1);
-		
+
 	pid_t	pid = fork();
 	if (pid == -1)
 		exit_with_code(&commands, 1);
@@ -173,19 +165,9 @@ int	main(int argc, char *argv[], char *envp[])
 		int		wait_status2;
 		
 		waitpid(pid, &wait_status, 0);
-		if (WIFEXITED(wait_status))
-			pipex_exit(wait_status);
-		else if (WIFSIGNALED(wait_status))
-		{
-			ft_printf("Child exited via signal %d\n", WTERMSIG(wait_status));
-		}
+		pipex_exit(wait_status);
 		waitpid(pid2, &wait_status2, 0);
-		if (WIFEXITED(wait_status2))
-			pipex_exit(wait_status2);
-		else if (WIFSIGNALED(wait_status))
-		{
-			ft_printf("Child exited via signal %d\n", WTERMSIG(wait_status));
-		}
+		pipex_exit(wait_status2);
 	}
 	exit_with_code(&commands, 0);
 }
