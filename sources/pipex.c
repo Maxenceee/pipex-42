@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2022/12/26 12:47:36 by mgama            ###   ########.fr       */
+/*   Updated: 2022/12/29 15:03:50 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,16 +81,56 @@ void	pipex_exit(int wait_status)
 void	exit_with_code(t_commands *commands, int code)
 {
 	
-	// free(commands->command1);
-	// free(commands->command2);
-	free(commands);
-	exit(code);
+	int i;
+	// Libération des chaînes de caractères
+    // free(commands->path_command1);
+    // free(commands->file1);
+    // free(commands->path_command2);
+    // free(commands->file2);
+
+    // Libération des tableaux de chaînes de caractères
+	i = 0;
+    while (commands->command1[i] != NULL)
+        free(commands->command1[i++]);
+    free(commands->command1);
+	i = 0;
+    while (commands->command2[i] != NULL)
+        free(commands->command2[i++]);
+    free(commands->command2);
+
+    // Libération de la structure elle-même
+    // free(commands);
+
+    // Quitter le programme avec le code donné
+    exit(code);
+}
+
+int	execcmd(int fdin, int fdout, char **command, char *envp[])
+{
+	char		*cmd;
+
+	if (dup2(fdin, STDIN_FILENO) < 0)
+		return (3);
+	close(fdin);
+	if (dup2(fdout, STDOUT_FILENO) < 0)
+		return (3);
+	close(fdout);
+
+	cmd = parse_env(envp, command[0]);
+	if (!cmd)
+		return (2);
+	if (execve(cmd, command, envp) == -1)
+	{
+		perror("Could not execute execve");
+		return (1);
+	}
+	return (0);
 }
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	// if (argc < 5 || argc > 5)
-	// 	return (1);
+	if (argc < 5 || argc > 5)
+		return (1);
 	t_commands	commands;
 	int			fd[2];
 	int			file;
@@ -108,27 +148,9 @@ int	main(int argc, char *argv[], char *envp[])
 		file = open(commands.file1, O_RDONLY);
 		if (file == -1)
 			return (4);
-		
-		if (dup2(file, STDIN_FILENO) < 0)
-			return (3);
-		close(file);
-		
-		if (dup2(fd[1], STDOUT_FILENO) < 0)
-		 	return (3);
-		close(fd[1]);
+
 		close(fd[0]);
-		
-		cmd = parse_env(envp, commands.command1[0]);
-		if (!cmd)
-			return (2);
-			
-		// ft_printf("Start of execve call %s:\n", cmd);
-		// ft_printf("========================================\n");
-		if (execve(cmd, commands.command1, envp) == -1)
-		{
-			perror("Could not execute execve");
-			return (1);
-		}
+		return (execcmd(file, fd[1], commands.command1, envp));
 	}
 	else
 	{
@@ -138,29 +160,12 @@ int	main(int argc, char *argv[], char *envp[])
 
 		if (pid2 == 0)
 		{
-			close(fd[1]);
 			int		output = open(commands.file2, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 			if (output == -1)
 				return (1);
-			
-			if (dup2(fd[0], STDIN_FILENO) < 0)
-				return (3);
-			close(fd[0]);
-			if (dup2(output, STDOUT_FILENO) < 0)
-				return (3);
-			close(output);
-
-			char	*cmd = parse_env(envp, commands.command2[0]);
-			if (!cmd)
-				return (2);
-
-			// ft_printf("Start of execve call %s:\n", cmd);
-			// ft_printf("========================================\n");
-			if (execve(cmd, commands.command2, envp) == -1)
-			{
-				perror("Could not execute execve");
-				return (1);
-			}
+				
+			close(fd[1]);
+			return (execcmd(fd[0], output, commands.command2, envp));
 		}
 		close(fd[0]);
 		close(fd[1]);
