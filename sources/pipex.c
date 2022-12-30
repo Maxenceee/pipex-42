@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2022/12/29 17:29:47 by mgama            ###   ########.fr       */
+/*   Updated: 2022/12/30 14:54:06 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ void	pipex_exit(int wait_status)
 	if (WIFEXITED(wait_status))
 	{
 		wstatus = WEXITSTATUS(wait_status);
+		if (wstatus == 0)
+			ft_printf("Succes\n");
 		if (wstatus == 2)
 			ft_printf("Could not find command\n");
 		else if (wstatus == 3)
@@ -124,7 +126,7 @@ int	main(int argc, char *argv[], char *envp[])
 	if (argc < 5 || argc > 5)
 		return (1);
 	t_commands	commands;
-	int			fd[2];
+	int			fd[4];
 	int			file;
 	char		*cmd;
 	
@@ -142,32 +144,61 @@ int	main(int argc, char *argv[], char *envp[])
 			return (4);
 
 		close(fd[0]);
+		close(fd[2]);
+		close(fd[3]);
+		ft_printf("pid1\n");
 		return (execcmd(file, fd[1], commands.command1, envp));
 	}
 	else
 	{
+		if (pipe(fd+2) == -1)
+			exit_with_code(&commands, 1);
 		pid_t	pid2 = fork();
 		if (pid2 == -1)
 			exit_with_code(&commands, 1);
 
 		if (pid2 == 0)
 		{
-			int		output = open(commands.file2, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-			if (output == -1)
-				return (1);
-				
 			close(fd[1]);
-			return (execcmd(fd[0], output, commands.command2, envp));
+			close(fd[2]);
+			ft_printf("pid2\n");
+			return (execcmd(fd[0], fd[3], commands.command2, envp));
 		}
-		close(fd[0]);
-		close(fd[1]);
-		int		wait_status;
-		int		wait_status2;
-		
-		waitpid(pid, &wait_status, 0);
-		pipex_exit(wait_status);
-		waitpid(pid2, &wait_status2, 0);
-		pipex_exit(wait_status2);
+		else
+		{
+			pid_t	pid3 = fork();
+			if (pid3 == -1)
+				exit_with_code(&commands, 1);
+
+			if (pid3 == 0)
+			{
+				int		output = open(commands.file2, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+				if (output == -1)
+					return (1);
+					
+				close(fd[0]);
+				close(fd[1]);
+				close(fd[3]);
+				ft_printf("pid3\n");
+				char *cmd[] = {"cat", "-e", NULL};
+				return (execcmd(fd[2], output, cmd, envp));
+			}
+			close(fd[0]);
+			close(fd[1]);
+			close(fd[2]);
+			close(fd[3]);
+			int		wait_status;
+			int		wait_status2;
+			int		wait_status3;
+			
+			waitpid(pid, &wait_status, 0);
+			pipex_exit(wait_status);
+			waitpid(pid2, &wait_status2, 0);
+			pipex_exit(wait_status2);
+			waitpid(pid3, &wait_status3, 0);
+			pipex_exit(wait_status3);
+			// ft_printf("\n");
+		}
 	}
 	exit_with_code(&commands, 0);
 }
