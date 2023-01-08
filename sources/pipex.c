@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2022/12/30 14:54:06 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/08 15:09:25 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,20 +46,41 @@ char	*parse_env(char *envp[], char *cmd)
 	return (NULL);
 }
 
-void	parse_commands(t_commands *commands, char *argv[])
+void	print_tab(char **tab)
 {
 	int	i = 0;
-	
-	while (argv[++i])
+	while (tab[i])
 	{
+		ft_printf("%s\n", tab[i++]);	
+	}
+}
+
+void	parse_commands(t_commands *commands, char *argv[], int argc)
+{
+	int		i = 0;
+	char	***comds;
+
+	comds = (char ***)ft_calloc((argc - 2), sizeof(char **));
+	if (!comds)
+		exit(EXIT_FAILURE);
+	while (++i < argc)
+	{
+		printf("%d %s\n", i, argv[i]);
 		if (i == 1)
-			commands->file1 = argv[i];
-		else if (i == 2)
-			commands->command1 = ft_split(argv[i], ' ');
-		else if (i == 3)
-			commands->command2 = ft_split(argv[i], ' ');
-		else if (i == 4)
-			commands->file2 = argv[i];
+			commands->input = argv[i];
+		else if (i == argc - 1)
+			commands->output = argv[i];
+		else
+			comds[i - 2] = ft_split(argv[i], ' ');
+	}
+	commands->command_list = comds;
+	commands->process_count = i-3;
+	ft_printf("\nprocess_count %d\n", commands->process_count);
+	int j = -1;
+	while (commands->command_list[++j])
+	{
+		print_tab(commands->command_list[j]);
+		fflush(NULL);
 	}
 }
 
@@ -75,7 +96,7 @@ void	pipex_exit(int wait_status)
 		if (wstatus == 2)
 			ft_printf("Could not find command\n");
 		else if (wstatus == 3)
-			ft_printf("Could not dup\n");
+			ft_printf("Could not dup2\n");
 		else if (wstatus == 4)
 			ft_printf("Cannot open file\n");
 	}
@@ -85,16 +106,19 @@ void	pipex_exit(int wait_status)
 
 void	exit_with_code(t_commands *commands, int code)
 {
-	int i;
+	int	i;
+	int	j;
 
 	i = 0;
-    while (commands->command1[i] != NULL)
-        free(commands->command1[i++]);
-    free(commands->command1);
+    while (commands->command_list[i] != NULL)
+	{
+		j = 0;
+		while (commands->command_list[i][j])
+        	free(commands->command_list[i][j++]);
+		free(commands->command_list[i++]);
+	}
+    free(commands->command_list);
 	i = 0;
-    while (commands->command2[i] != NULL)
-        free(commands->command2[i++]);
-    free(commands->command2);
 	if (code > 0)
 		perror("An error occurred while executing the program");
     exit(code);
@@ -121,16 +145,25 @@ int	execcmd(int fdin, int fdout, char **command, char *envp[])
 	return (0);
 }
 
+// int	fork_processes(t_commands *commands)
+// {
+	
+// }
+
 int	main(int argc, char *argv[], char *envp[])
 {
-	if (argc < 5 || argc > 5)
+	if (argc < 5)
+	{
+		ft_printf("You must provied at least 4 arguments.");
 		return (1);
+	}
 	t_commands	commands;
 	int			fd[4];
 	int			file;
 	char		*cmd;
 	
-	parse_commands(&commands, argv);
+	parse_commands(&commands, argv, argc);
+
 	if (pipe(fd) == -1)
 		exit_with_code(&commands, 1);
 
@@ -139,7 +172,7 @@ int	main(int argc, char *argv[], char *envp[])
 		exit_with_code(&commands, 1);
 	if (pid == 0)
 	{	
-		file = open(commands.file1, O_RDONLY);
+		file = open(commands.input, O_RDONLY);
 		if (file == -1)
 			return (4);
 
@@ -147,7 +180,7 @@ int	main(int argc, char *argv[], char *envp[])
 		close(fd[2]);
 		close(fd[3]);
 		ft_printf("pid1\n");
-		return (execcmd(file, fd[1], commands.command1, envp));
+		return (execcmd(file, fd[1], commands.command_list[0], envp));
 	}
 	else
 	{
@@ -162,7 +195,7 @@ int	main(int argc, char *argv[], char *envp[])
 			close(fd[1]);
 			close(fd[2]);
 			ft_printf("pid2\n");
-			return (execcmd(fd[0], fd[3], commands.command2, envp));
+			return (execcmd(fd[0], fd[3], commands.command_list[1], envp));
 		}
 		else
 		{
@@ -172,7 +205,7 @@ int	main(int argc, char *argv[], char *envp[])
 
 			if (pid3 == 0)
 			{
-				int		output = open(commands.file2, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+				int		output = open(commands.output, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 				if (output == -1)
 					return (1);
 					
@@ -180,8 +213,8 @@ int	main(int argc, char *argv[], char *envp[])
 				close(fd[1]);
 				close(fd[3]);
 				ft_printf("pid3\n");
-				char *cmd[] = {"cat", "-e", NULL};
-				return (execcmd(fd[2], output, cmd, envp));
+				// char *cmd[] = {"cat", "-e", NULL};
+				return (execcmd(fd[2], output, commands.command_list[2], envp));
 			}
 			close(fd[0]);
 			close(fd[1]);
