@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/08 16:03:03 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/09 17:24:06 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,10 +158,12 @@ void	read_pipe(int fdin)
 {
 	char	buffer[4096];
 
-	if (read(fdin, buffer, sizeof(buffer)) < 0)
+	if (read(fdin, buffer, sizeof(buffer)) < 0) {
 		ft_printf("cannot read fd %d\n", fdin);
+		perror("read error");
+	}
 	else
-		ft_printf("read fd %d: %s\t end read\n", fdin, buffer);
+		ft_printf("read fd %d: %s /*end read*/\n", fdin, buffer);
 }
 
 void	fork_processes(t_commands *commands)
@@ -189,6 +191,7 @@ void	fork_processes(t_commands *commands)
 	{
 		if (pipe(fd[i]) == -1)
 			exit_with_code(commands, 1);
+		ft_printf("pipe on read %d write %d\n", fd[i][0], fd[i][1]);
 	}
 	// print_tab_int(fd);
 	i = -1;
@@ -199,14 +202,18 @@ void	fork_processes(t_commands *commands)
 			exit_with_code(commands, 1);
 		if (pid == 0)
 		{
+			ft_printf("pid: %d\n", pid);
 			j = -1;
-
 			while (++j < commands->process_count)
 			{
-				if (i != j)
+				if (i != j) {
+					ft_printf("%d closing r pipe %d\n", j, fd[j][0]);
 					close(fd[j][0]);
-				if (i + 1 != j)
+				}
+				if (i + 1 != j) {
+					ft_printf("%d closing w pipe %d\n", j, fd[j][1]);
 					close(fd[j][1]);
+				}
 			}
 			
 			// write(fd[i + 1][1], "hello", 6);
@@ -215,11 +222,12 @@ void	fork_processes(t_commands *commands)
 				fdin = open(commands->input, O_RDONLY);
 				if (fdin == -1)
 					exit_with_code(commands, 1);
-				ft_printf("read file\n");
+				ft_printf("read file on fd %d, closing pipe %d\n", fdin, fd[i][0]);
 				close(fd[i][0]);
 			}
 			else
 				fdin = fd[i][0];
+
 			if (i < commands->process_count - 1)
 				fdout = fd[i + 1][1];
 			else
@@ -227,29 +235,29 @@ void	fork_processes(t_commands *commands)
 				fdout = open(commands->output, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 				if (fdout == -1)
 					exit_with_code(commands, 1);
-				ft_printf("write file\n");
-				close(fd[i + 1][1]);
+				ft_printf("write file on fd %d\n", fdout);
 			}
-			ft_printf("fdin %d fdout %d\n\n", fdin, fdout);
+			
+			ft_printf("id: %d fdin %d fdout %d\n\n", i, fdin, fdout);
 			read_pipe(fdin);
+			fflush(NULL);
 				
 			// if (fdin == -1 || fdout == -1)
 			// 	exit_with_code(commands, 4);
 
-			char	buffer[4096];
+			// char	buffer[4096];
 
-			if (read(fdin, buffer, sizeof(buffer)) < 0)
-				ft_printf("cannot read fd %d\n", fdin);
+			// if (read(fdin, buffer, sizeof(buffer)) < 0)
+			// 	ft_printf("cannot read fd %d\n", fdin);
 
-			if (write(fdout, buffer, ft_strlen(buffer)) < 0)
-				ft_printf("cannot write fd %d\n", fdout);
-			
-			// execcmd(fdin, fdout, commands->command_list[i], commands->envp);
+			// if (write(fdout, buffer, ft_strlen(buffer)) < 0)
+			// 	ft_printf("cannot write fd %d\n", fdout);
+			int r = execcmd(fdin, fdout, commands->command_list[i], commands->envp);
+			ft_printf("execcmd error %d: fdin %d fdout %d\n", r, fdin, fdout);
 		}
 		else
 		{
-			// close(fd[0]);
-			// close(fd[1]);
+			ft_printf("\nmain pid: %d\n", pid);
 			j = -1;
 			while (++j < commands->process_count)
 			{
