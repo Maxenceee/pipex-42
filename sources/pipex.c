@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/08 15:09:25 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/08 16:03:03 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,15 @@ void	print_tab(char **tab)
 	while (tab[i])
 	{
 		ft_printf("%s\n", tab[i++]);	
+	}
+}
+
+void	print_tab_int(int **tab)
+{
+	int	i = 0;
+	while (tab[i])
+	{
+		ft_printf("%d\n", tab[i++]);	
 	}
 }
 
@@ -145,93 +154,180 @@ int	execcmd(int fdin, int fdout, char **command, char *envp[])
 	return (0);
 }
 
-// int	fork_processes(t_commands *commands)
-// {
+void	read_pipe(int fdin)
+{
+	char	buffer[4096];
+
+	if (read(fdin, buffer, sizeof(buffer)) < 0)
+		ft_printf("cannot read fd %d\n", fdin);
+	else
+		ft_printf("read fd %d: %s\t end read\n", fdin, buffer);
+}
+
+void	fork_processes(t_commands *commands)
+{
+	pid_t	pid;
+	int		file;
+	int		**fd;
+	int		fdin;
+	int		fdout;
+	int		wait_status;
+	int		i;
+	int		j;
 	
-// }
+	// if (pipe(fd) == -1)
+	// 	exit_with_code(commands, 1);
+	
+	fd = malloc(sizeof(int *) * commands->process_count);
+	if (!fd)
+		exit_with_code(commands, 1);
+	i = -1;
+	while (++i < commands->process_count)
+		fd[i] = ft_calloc(2, sizeof(int));
+	i = -1;
+	while (++i < commands->process_count)
+	{
+		if (pipe(fd[i]) == -1)
+			exit_with_code(commands, 1);
+	}
+	// print_tab_int(fd);
+	i = -1;
+	while (++i < commands->process_count)
+	{
+		pid = fork();
+		if (pid == -1)
+			exit_with_code(commands, 1);
+		if (pid == 0)
+		{
+			j = -1;
+
+			while (++j < commands->process_count)
+			{
+				if (i != j)
+					close(fd[j][0]);
+				if (i + 1 != j)
+					close(fd[j][1]);
+			}
+			
+			// write(fd[i + 1][1], "hello", 6);
+			if (i == 0)
+			{
+				fdin = open(commands->input, O_RDONLY);
+				if (fdin == -1)
+					exit_with_code(commands, 1);
+				ft_printf("read file\n");
+				close(fd[i][0]);
+			}
+			else
+				fdin = fd[i][0];
+			if (i < commands->process_count - 1)
+				fdout = fd[i + 1][1];
+			else
+			{
+				fdout = open(commands->output, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+				if (fdout == -1)
+					exit_with_code(commands, 1);
+				ft_printf("write file\n");
+				close(fd[i + 1][1]);
+			}
+			ft_printf("fdin %d fdout %d\n\n", fdin, fdout);
+			read_pipe(fdin);
+				
+			// if (fdin == -1 || fdout == -1)
+			// 	exit_with_code(commands, 4);
+
+			char	buffer[4096];
+
+			if (read(fdin, buffer, sizeof(buffer)) < 0)
+				ft_printf("cannot read fd %d\n", fdin);
+
+			if (write(fdout, buffer, ft_strlen(buffer)) < 0)
+				ft_printf("cannot write fd %d\n", fdout);
+			
+			// execcmd(fdin, fdout, commands->command_list[i], commands->envp);
+		}
+		else
+		{
+			// close(fd[0]);
+			// close(fd[1]);
+			j = -1;
+			while (++j < commands->process_count)
+			{
+				close(fd[j][0]);
+				close(fd[j][1]);
+			}
+			waitpid(pid, &wait_status, 0);
+			pipex_exit(wait_status);
+		}
+	}
+	
+}
 
 int	main(int argc, char *argv[], char *envp[])
 {
 	if (argc < 5)
 	{
-		ft_printf("You must provied at least 4 arguments.");
+		ft_printf("Missing arguments. You must provied at least 4 arguments.");
 		return (1);
 	}
 	t_commands	commands;
-	int			fd[4];
 	int			file;
 	char		*cmd;
 	
 	parse_commands(&commands, argv, argc);
+	commands.envp = envp;	
+	
+	fork_processes(&commands);
+	// if (1)
+	// {
+	// 	if (pipe(fd+2) == -1)
+	// 		exit_with_code(&commands, 1);
+	// 	pid_t	pid2 = fork();
+	// 	if (pid2 == -1)
+	// 		exit_with_code(&commands, 1);
 
-	if (pipe(fd) == -1)
-		exit_with_code(&commands, 1);
+	// 	if (pid2 == 0)
+	// 	{
+	// 		close(fd[1]);
+	// 		close(fd[2]);
+	// 		ft_printf("pid2\n");
+	// 		return (execcmd(fd[0], fd[3], commands.command_list[1], envp));
+	// 	}
+	// 	else
+	// 	{
+	// 		pid_t	pid3 = fork();
+	// 		if (pid3 == -1)
+	// 			exit_with_code(&commands, 1);
 
-	pid_t	pid = fork();
-	if (pid == -1)
-		exit_with_code(&commands, 1);
-	if (pid == 0)
-	{	
-		file = open(commands.input, O_RDONLY);
-		if (file == -1)
-			return (4);
-
-		close(fd[0]);
-		close(fd[2]);
-		close(fd[3]);
-		ft_printf("pid1\n");
-		return (execcmd(file, fd[1], commands.command_list[0], envp));
-	}
-	else
-	{
-		if (pipe(fd+2) == -1)
-			exit_with_code(&commands, 1);
-		pid_t	pid2 = fork();
-		if (pid2 == -1)
-			exit_with_code(&commands, 1);
-
-		if (pid2 == 0)
-		{
-			close(fd[1]);
-			close(fd[2]);
-			ft_printf("pid2\n");
-			return (execcmd(fd[0], fd[3], commands.command_list[1], envp));
-		}
-		else
-		{
-			pid_t	pid3 = fork();
-			if (pid3 == -1)
-				exit_with_code(&commands, 1);
-
-			if (pid3 == 0)
-			{
-				int		output = open(commands.output, O_WRONLY | O_CREAT | O_TRUNC, 0777);
-				if (output == -1)
-					return (1);
+	// 		if (pid3 == 0)
+	// 		{
+	// 			int		output = open(commands.output, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	// 			if (output == -1)
+	// 				return (1);
 					
-				close(fd[0]);
-				close(fd[1]);
-				close(fd[3]);
-				ft_printf("pid3\n");
-				// char *cmd[] = {"cat", "-e", NULL};
-				return (execcmd(fd[2], output, commands.command_list[2], envp));
-			}
-			close(fd[0]);
-			close(fd[1]);
-			close(fd[2]);
-			close(fd[3]);
-			int		wait_status;
-			int		wait_status2;
-			int		wait_status3;
+	// 			close(fd[0]);
+	// 			close(fd[1]);
+	// 			close(fd[3]);
+	// 			ft_printf("pid3\n");
+	// 			char *cmd[] = {"cat", "-e", NULL};
+	// 			return (execcmd(fd[2], output, cmd, envp));
+	// 		}
+	// 		close(fd[0]);
+	// 		close(fd[1]);
+	// 		close(fd[2]);
+	// 		close(fd[3]);
+	// 		int		wait_status;
+	// 		int		wait_status2;
+	// 		int		wait_status3;
 			
-			waitpid(pid, &wait_status, 0);
-			pipex_exit(wait_status);
-			waitpid(pid2, &wait_status2, 0);
-			pipex_exit(wait_status2);
-			waitpid(pid3, &wait_status3, 0);
-			pipex_exit(wait_status3);
-			// ft_printf("\n");
-		}
-	}
+	// 		waitpid(pid, &wait_status, 0);
+	// 		pipex_exit(wait_status);
+	// 		waitpid(pid2, &wait_status2, 0);
+	// 		pipex_exit(wait_status2);
+	// 		waitpid(pid3, &wait_status3, 0);
+	// 		pipex_exit(wait_status3);
+	// 		// ft_printf("\n");
+	// 	}
+	// }
 	exit_with_code(&commands, 0);
 }
