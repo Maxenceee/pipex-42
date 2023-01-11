@@ -1,26 +1,33 @@
-SRCS			=	$(shell find sources -name "*.c")
+SRCS			=	$(shell find mandatory -name "*.c")
 OBJS			=	$(SRCS:.c=.o)
+
+SRCS_BONUS		=	$(shell find bonus -name "*.c")
+OBJS_BONUS		=	$(SRCS_BONUS:.c=.o)
 
 HEADERS			=	includes/
 CC				=	cc
 RM				=	rm -f
-CFLAGS			=	-Wall -Wextra -Werror
+CFLAGS			=	
+#CFLAGS			=	-Wall -Wextra -Werror
 LIBS			=	-L ./printf -lftprintf
 
 NAME			=	pipex
 
-# %.o: %.c $(HEADERS) Makefile
-# 	$(CC) $(CFLAGS) -c $< -o $@ $(HEADERS)
+%.o: %.c $(HEADERS) Makefile
+	$(CC) $(CFLAGS) -c $< -o $@ 
 
 all:			$(NAME)
 
-$(NAME):		$(SRCS)
-				$(CC) $(SRCS) $(LIBS) -o $(NAME)
+$(NAME):		$(OBJS)
+				@$(CC) $(OBJS) $(LIBS) -o $(NAME)
+				@echo "$(GREEN)$(NAME) compiled!$(DEFAULT)"
 
-bonus: all
+bonus:			$(OBJS_BONUS)
+				@$(CC) $(OBJS_BONUS) $(LIBS) -o $(NAME)
+				@echo "$(GREEN)$(NAME) compiled!$(DEFAULT)"
 
 clean:
-				$(RM) $(OBJS) $(BONUS_OBJS)
+				$(RM) $(OBJS) $(OBJS_BONUS)
 
 fclean:			clean
 				$(RM) $(NAME)

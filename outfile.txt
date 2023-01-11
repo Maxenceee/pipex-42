@@ -1,0 +1,2 @@
+PING google.com (216.58.214.174): 56 data bytes
+--- google.com ping statistics ---
