@@ -1,0 +1,10 @@
+PING google.com (108.177.15.102): 56 data bytes$
+64 bytes from 108.177.15.102: icmp_seq=0 ttl=104 time=15.021 ms$
+64 bytes from 108.177.15.102: icmp_seq=1 ttl=104 time=21.862 ms$
+64 bytes from 108.177.15.102: icmp_seq=2 ttl=104 time=15.103 ms$
+64 bytes from 108.177.15.102: icmp_seq=3 ttl=104 time=15.154 ms$
+64 bytes from 108.177.15.102: icmp_seq=4 ttl=104 time=15.171 ms$
+$
+--- google.com ping statistics ---$
+5 packets transmitted, 5 packets received, 0.0% packet loss$
+round-trip min/avg/max/stddev = 15.021/16.462/21.862/2.700 ms$

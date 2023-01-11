@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:57 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/10 19:30:32 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/11 19:13:10 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ void	parse_commands(t_commands *commands, char *argv[], int argc);
 char	*ft_strnstr(const char *str, const char *to_find, size_t n);
 void	*ft_calloc(size_t count, size_t size);
 char	*ft_strjoin_arr(int size, char **strs, char *sep);
-char	*ft_strtrim(char const *s1, char const *set);
 char	**ft_split(const char *str, char charset);
 
 #endif
