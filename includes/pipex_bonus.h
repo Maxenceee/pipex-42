@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:57 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/11 20:18:27 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/12 18:31:47 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,23 @@ typedef struct	s_commands {
 	char	**envp;
 }				t_commands;
 
+/* pipes */
+
+void	create_pipes(t_commands *commands);
+void	close_pipes(t_commands *commands);
+int		dup2_fdinout(int fdin, int fdout);
+
+/* exits */
+
+void	exit_with_code(t_commands *commands, int code);
+void	exit_error_with_msg(t_commands *commands, char *msg);
+
+/* parsing */
+
 char	*parse_env(char *envp[], char *cmd);
 void	parse_commands(t_commands *commands, char *argv[], int argc);
-void	exit_error_with_msg(t_commands *commands, char *msg);
-void	exit_with_code(t_commands *commands, int code);
+
+/* others */
 
 char	*ft_strnstr(const char *str, const char *to_find, size_t n);
 void	*ft_calloc(size_t count, size_t size);
