@@ -15,7 +15,7 @@ $> ./pipex file1 cmd1 cmd2 file2
 All errors like wrong commands, permission to files, etc, must be handled.
 
 ## Bonus part
-The program need to handle multiple pipes
+The program need to support multiple pipes
 
 ```sh
 $> < file1 cmd1 | cmd2 | cmd3 | ... | cmdn > file2
