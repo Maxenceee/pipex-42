@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:57 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/12 18:31:47 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/13 15:14:49 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 # define FORK_ERROR "Fork"
 # define PERM_DENIED "permission denied"
 
-typedef struct	s_commands {
+typedef struct s_commands {
 	char	***command_list;
 	char	*input;
 	char	*output;

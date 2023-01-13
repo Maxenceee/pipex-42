@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/12 18:31:29 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/13 15:29:59 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ static int	execcmd(char **command, char *envp[])
 {
 	char		*cmd;
 
+	if (command[0] == NULL)
+		return (5);
 	cmd = parse_env(envp, command[0]);
 	if (!cmd)
 		return (2);
@@ -67,7 +69,8 @@ static void	process_child(t_commands *commands, int idx)
 		if (open_fdinout(idx, commands))
 			return ;
 		close_pipes(commands);
-		execcmd(commands->command_list[idx], commands->envp);
+		if (execcmd(commands->command_list[idx], commands->envp) == 5)
+			exit_error_with_msg(commands, PERM_DENIED);
 	}
 }
 

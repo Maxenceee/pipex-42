@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:21:21 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/10 19:29:49 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/13 15:24:39 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ void	first_child(t_commands *commands)
 		exit_with_code(commands, 1);
 	close(commands->pipe[0]);
 	fdout = commands->pipe[1];
-	execcmd(fdin, fdout, commands->command_list[0], commands->envp);
+	if (execcmd(fdin, fdout, commands->command_list[0], commands->envp) == 5)
+		perror(PERM_DENIED);
 }
 
 void	second_child(t_commands *commands)
@@ -55,5 +56,6 @@ void	second_child(t_commands *commands)
 	if (fdout == -1)
 		exit_with_code(commands, 1);
 	close(commands->pipe[1]);
-	execcmd(fdin, fdout, commands->command_list[1], commands->envp);
+	if (execcmd(fdin, fdout, commands->command_list[1], commands->envp) == 5)
+		perror(PERM_DENIED);
 }

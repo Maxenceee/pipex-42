@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:57 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/12 18:31:37 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/13 15:22:35 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 # include <errno.h>
 # include <fcntl.h>
 # include "../printf/ft_printf.h"
+
+# define PERM_DENIED "permission denied"
 
 typedef struct s_commands {
 	char	***command_list;
