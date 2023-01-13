@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/13 15:26:09 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/13 17:03:16 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,6 @@ void	fork_process(t_commands *commands)
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_commands	commands;
-	int			file;
-	char		*cmd;
 
 	if (argc < 5)
 	{

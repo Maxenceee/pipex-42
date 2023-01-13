@@ -6,13 +6,13 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:19:32 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/11 19:36:45 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/13 17:02:48 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-char	*get_path(char *envp[], char *cmd)
+char	*get_path(char *envp[])
 {
 	char	*env;
 	int		i;
@@ -29,13 +29,12 @@ char	*get_path(char *envp[], char *cmd)
 
 char	*parse_env(char *envp[], char *cmd)
 {
-	char	*env;
 	char	*path;
 	char	**bins;
 	char	*joins[3];
 	int		i;
 
-	path = get_path(envp, cmd);
+	path = get_path(envp);
 	if (!path)
 		return (NULL);
 	bins = ft_split(path, ':');
