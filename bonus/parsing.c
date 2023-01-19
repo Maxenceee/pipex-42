@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:19:32 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/12 18:24:47 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/13 17:03:36 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ static char	*get_path(char *envp[])
 
 char	*parse_env(char *envp[], char *cmd)
 {
-	char	*env;
 	char	*path;
 	char	**bins;
 	char	*joins[3];
