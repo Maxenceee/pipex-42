@@ -6,29 +6,11 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 19:40:47 by mgama             #+#    #+#             */
-/*   Updated: 2022/12/30 15:30:22 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/18 21:42:20 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
-
-// static void	*ft_memset(void *b, int c, size_t len)
-// {
-// 	size_t	i;
-
-// 	i = 0;
-// 	while (i < len)
-// 	{
-// 		((char *)b)[i] = (unsigned char)c;
-// 		i++;
-// 	}
-// 	return (b);
-// }
-
-// static void	ft_bzero(void *s, size_t n)
-// {
-// 	ft_memset(s, '\0', n);
-// }
 
 void	*ft_calloc(size_t count, size_t size)
 {
