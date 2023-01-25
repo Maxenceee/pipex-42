@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:19:32 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/25 23:44:24 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/26 00:03:07 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,33 @@ char	*parse_env(char *envp[], char *cmd)
 	return (NULL);
 }
 
-void	parse_commands(t_commands *commands, char *argv[], int argc)
+static void	parse_commands_2(t_commands *commands, char *argv[],
+	int argc)
 {
 	int		i;
+
+	i = 1;
+	while (++i < argc - 1)
+	{
+		commands->command_list[i - 2] = ft_split(argv[i], ' ');
+		if (commands->command_list[i - 2] && !commands->command_list[i - 2][0])
+		{
+			free(commands->command_list[i - 2]);
+			commands->command_list[i - 2] = ft_calloc(2, sizeof(char *));
+			if (!commands->command_list[i - 2])
+				exit_with_code(commands, 1);
+			commands->command_list[i - 2][0] = ft_strdup("");
+			if (!commands->command_list[i - 2])
+				exit_with_code(commands, 1);
+		}
+		else if (!commands->command_list[i - 2])
+			exit_with_code(commands, 1);
+	}
+	commands->process_count = i - 2;
+}
+
+void	parse_commands(t_commands *commands, char *argv[], int argc)
+{
 	char	***comds;
 
 	comds = (char ***)ft_calloc((argc - 2), sizeof(char **));
@@ -65,21 +89,6 @@ void	parse_commands(t_commands *commands, char *argv[], int argc)
 		exit(EXIT_FAILURE);
 	commands->input = argv[1];
 	commands->output = argv[argc - 1];
-	commands->command_list = NULL;
-	i = 1;
-	while (++i < argc - 1)
-	{
-		comds[i - 2] = ft_split(argv[i], ' ');
-		if (!comds[i - 2] || !comds[i - 2][0])
-		{
-			comds[i - 2] = ft_calloc(2, sizeof(char *));
-			if (!comds[i - 2])
-				exit_with_code(commands, 1);
-			comds[i - 2][0] = ft_strdup("");
-			if (!comds[i - 2])
-				exit_with_code(commands, 1);
-		}
-	}
 	commands->command_list = comds;
-	commands->process_count = i - 2;
+	parse_commands_2(commands, argv, argc);
 }
