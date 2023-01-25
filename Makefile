@@ -4,6 +4,7 @@ SRCS			=	./mandatory/childs.c	\
 					./mandatory/ft_split.c	\
 					./mandatory/ft_strjoin.c	\
 					./mandatory/ft_strnstr.c	\
+					./mandatory/ft_strcmp.c	\
 					./mandatory/parsing.c	\
 					./mandatory/pipex.c
 OBJS			=	$(SRCS:.c=.o)
@@ -14,6 +15,7 @@ SRCS_BONUS		=	./bonus/exits.c	\
 					./bonus/ft_split.c	\
 					./bonus/ft_strjoin.c	\
 					./bonus/ft_strnstr.c	\
+					./bonus/ft_strcmp.c	\
 					./bonus/parsing.c	\
 					./bonus/pipes.c	\
 					./bonus/pipex.c
@@ -24,7 +26,7 @@ HEADERS_DIR		=	includes
 HEADERS			=	$(addprefix $(HEADERS_DIR), $(HEADER_SRCS))
 CC				=	cc
 RM				=	rm -f
-CFLAGS			=	-Wall -Wextra -Werror
+# CFLAGS			=	-Wall -Wextra -Werror
 LIBS			=	-L ./printf -lftprintf
 
 NAME			=	pipex

@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:19:32 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/25 20:25:49 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/25 23:44:24 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,21 @@ void	parse_commands(t_commands *commands, char *argv[], int argc)
 		exit(EXIT_FAILURE);
 	commands->input = argv[1];
 	commands->output = argv[argc - 1];
+	commands->command_list = NULL;
 	i = 1;
 	while (++i < argc - 1)
+	{
 		comds[i - 2] = ft_split(argv[i], ' ');
+		if (!comds[i - 2] || !comds[i - 2][0])
+		{
+			comds[i - 2] = ft_calloc(2, sizeof(char *));
+			if (!comds[i - 2])
+				exit_with_code(commands, 1);
+			comds[i - 2][0] = ft_strdup("");
+			if (!comds[i - 2])
+				exit_with_code(commands, 1);
+		}
+	}
 	commands->command_list = comds;
 	commands->process_count = i - 2;
 }

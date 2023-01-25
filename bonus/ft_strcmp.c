@@ -1,39 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exits.c                                            :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/12 18:21:18 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/25 23:43:10 by mgama            ###   ########.fr       */
+/*   Created: 2022/11/07 14:02:03 by mgama             #+#    #+#             */
+/*   Updated: 2023/01/25 23:39:03 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex_bonus.h"
 
-void	exit_with_code(t_commands *commands, int code)
+int	ft_strcmp(const char *s1, const char *s2)
 {
-	int	i;
-	int	j;
+	unsigned int	i;
 
 	i = 0;
-	if (commands->command_list != NULL)
+	while ((char)s1[i] == (char)s2[i] \
+		&& (char)s1[i] != '\0' && (char)s2[i] != '\0')
 	{
-		while (commands->command_list[i] != NULL)
-		{
-			j = 0;
-			while (commands->command_list[i][j])
-				free(commands->command_list[i][j++]);
-			free(commands->command_list[i++]);
-		}
-		free(commands->command_list);
+		i++;
 	}
-	exit(code);
-}
-
-void	exit_error_with_msg(t_commands *commands, char *msg)
-{
-	perror(msg);
-	exit_with_code(commands, 1);
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }

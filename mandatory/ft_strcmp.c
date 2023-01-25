@@ -1,23 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/08 12:57:23 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/25 23:29:17 by mgama            ###   ########.fr       */
+/*   Created: 2022/11/07 14:02:03 by mgama             #+#    #+#             */
+/*   Updated: 2023/01/25 23:41:19 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/pipex_bonus.h"
+#include "../includes/pipex.h"
 
-void	ft_putstr_fd(char *s, char *t, int fd)
+int	ft_strcmp(const char *s1, const char *s2)
 {
-	if (!s || !t)
-		return ;
-	write(fd, s, ft_strlen(s));
-	write(fd, ": ", 2);
-	write(fd, t, ft_strlen(t));
-	write(fd, "\n", 1);
+	unsigned int	i;
+
+	i = 0;
+	while ((char)s1[i] == (char)s2[i] \
+		&& (char)s1[i] != '\0' && (char)s2[i] != '\0')
+	{
+		i++;
+	}
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }

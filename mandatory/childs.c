@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:21:21 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/25 21:32:57 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/25 23:43:33 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,17 @@ void	exit_with_code(t_commands *commands, int code)
 	int	j;
 
 	i = 0;
-	while (commands->command_list[i] != NULL)
+	if (commands->command_list != NULL)
 	{
-		j = 0;
-		while (commands->command_list[i][j])
-			free(commands->command_list[i][j++]);
-		free(commands->command_list[i++]);
+		while (commands->command_list[i] != NULL)
+		{
+			j = 0;
+			while (commands->command_list[i][j])
+				free(commands->command_list[i][j++]);
+			free(commands->command_list[i++]);
+		}
+		free(commands->command_list);
 	}
-	free(commands->command_list);
 	i = 0;
 	if (code > 0)
 		perror("An error occurred while executing the program");

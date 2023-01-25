@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/25 20:25:55 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/25 23:41:12 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	execcmd(int fdin, int fdout, char **command, char *envp[])
 	if (command[0] == NULL)
 		return (5);
 	cmd = parse_env(envp, command[0]);
-	if (!cmd)
+	if (!cmd || ft_strcmp(command[0], "") == 0)
 		return (2);
 	if (execve(cmd, command, envp) == -1)
 	{
