@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:50 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/13 15:29:59 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/25 21:54:09 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ static int	open_fdinout(int idx, t_commands *c)
 static void	process_child(t_commands *commands, int idx)
 {
 	pid_t	pid;
+	int		res;
 
 	pid = fork();
 	if (pid == -1)
@@ -69,8 +70,12 @@ static void	process_child(t_commands *commands, int idx)
 		if (open_fdinout(idx, commands))
 			return ;
 		close_pipes(commands);
-		if (execcmd(commands->command_list[idx], commands->envp) == 5)
+		res = execcmd(commands->command_list[idx], commands->envp);
+		if (res == 5)
 			exit_error_with_msg(commands, PERM_DENIED);
+		else if (res == 2)
+			ft_putstr_fd(commands->command_list[idx][0], NO_COMMAND, 2);
+		exit(1);
 	}
 }
 

@@ -1,5 +1,6 @@
 SRCS			=	./mandatory/childs.c	\
 					./mandatory/ft_calloc.c	\
+					./mandatory/ft_putstr_fd.c	\
 					./mandatory/ft_split.c	\
 					./mandatory/ft_strjoin.c	\
 					./mandatory/ft_strnstr.c	\
@@ -9,6 +10,7 @@ OBJS			=	$(SRCS:.c=.o)
 
 SRCS_BONUS		=	./bonus/exits.c	\
 					./bonus/ft_calloc.c	\
+					./mandatory/ft_putstr_fd.c	\
 					./bonus/ft_split.c	\
 					./bonus/ft_strjoin.c	\
 					./bonus/ft_strnstr.c	\

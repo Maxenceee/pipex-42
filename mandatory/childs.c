@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:21:21 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/13 15:24:39 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/25 21:32:57 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,26 +36,34 @@ void	first_child(t_commands *commands)
 {
 	int		fdin;
 	int		fdout;
+	int		res;
 
 	fdin = open(commands->input, O_RDONLY);
 	if (fdin == -1)
 		exit_with_code(commands, 1);
 	close(commands->pipe[0]);
 	fdout = commands->pipe[1];
-	if (execcmd(fdin, fdout, commands->command_list[0], commands->envp) == 5)
+	res = execcmd(fdin, fdout, commands->command_list[0], commands->envp);
+	if (res == 5)
 		perror(PERM_DENIED);
+	else if (res == 2)
+		ft_putstr_fd(commands->command_list[0][0], NO_COMMAND, 2);
 }
 
 void	second_child(t_commands *commands)
 {
 	int		fdin;
 	int		fdout;
+	int		res;
 
 	fdin = commands->pipe[0];
 	fdout = open(commands->output, O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	if (fdout == -1)
 		exit_with_code(commands, 1);
 	close(commands->pipe[1]);
-	if (execcmd(fdin, fdout, commands->command_list[1], commands->envp) == 5)
+	res = execcmd(fdin, fdout, commands->command_list[1], commands->envp);
+	if (res == 5)
 		perror(PERM_DENIED);
+	else if (res == 2)
+		ft_putstr_fd(commands->command_list[1][0], NO_COMMAND, 2);
 }

@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/04 14:46:57 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/13 15:14:49 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/25 21:35:41 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/wait.h>
+# include <sys/errno.h>
 # include <signal.h>
-# include <errno.h>
 # include <fcntl.h>
 # include "../printf/ft_printf.h"
 
@@ -27,6 +27,7 @@
 # define OPEN_IN_ERROR "Infile"
 # define OPEN_OUT_ERROR "Outfile"
 # define FORK_ERROR "Fork"
+# define NO_COMMAND "Command not found"
 # define PERM_DENIED "permission denied"
 
 typedef struct s_commands {
@@ -57,6 +58,7 @@ void	parse_commands(t_commands *commands, char *argv[], int argc);
 
 /* others */
 
+void	ft_putstr_fd(char *s, char *t, int fd);
 char	*ft_strnstr(const char *str, const char *to_find, size_t n);
 void	*ft_calloc(size_t count, size_t size);
 char	*ft_strjoin_arr(int size, char **strs, char *sep);

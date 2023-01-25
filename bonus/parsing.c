@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:19:32 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/13 17:03:36 by mgama            ###   ########.fr       */
+/*   Updated: 2023/01/25 21:44:02 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ char	*parse_env(char *envp[], char *cmd)
 	}
 	free(bins);
 	free(path);
-	return (cmd);
+	return (NULL);
 }
 
 void	parse_commands(t_commands *commands, char *argv[], int argc)
