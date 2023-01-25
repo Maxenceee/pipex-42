@@ -1,3 +1,4 @@
 pipex
 .vscode
 a.out
+*/*.o

@@ -10,7 +10,7 @@ OBJS			=	$(SRCS:.c=.o)
 
 SRCS_BONUS		=	./bonus/exits.c	\
 					./bonus/ft_calloc.c	\
-					./mandatory/ft_putstr_fd.c	\
+					./bonus/ft_putstr_fd.c	\
 					./bonus/ft_split.c	\
 					./bonus/ft_strjoin.c	\
 					./bonus/ft_strnstr.c	\
