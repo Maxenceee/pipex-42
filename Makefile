@@ -26,7 +26,7 @@ HEADERS_DIR		=	includes
 HEADERS			=	$(addprefix $(HEADERS_DIR), $(HEADER_SRCS))
 CC				=	cc
 RM				=	rm -f
-# CFLAGS			=	-Wall -Wextra -Werror
+CFLAGS			=	-Wall -Wextra -Werror
 LIBS			=	-L ./printf -lftprintf
 
 NAME			=	pipex
