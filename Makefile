@@ -31,8 +31,9 @@ LIBS			=	-L ./printf -lftprintf
 
 NAME			=	pipex
 
-GREEN = \033[1;32m
-DEFAULT = \033[0m
+GREEN			=	\033[1;32m
+DEFAULT			=	\033[0m
+BLUE			=	\033[1;34m
 
 %.o: %.c $(HEADERS) Makefile
 	@$(CC) $(CFLAGS) -c $< -o $@ -gc5
