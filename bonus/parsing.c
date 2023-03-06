@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:19:32 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/26 00:03:30 by mgama            ###   ########.fr       */
+/*   Updated: 2023/03/06 14:12:35 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,13 @@
 
 static char	*get_path(char *envp[])
 {
-	char	*env;
 	int		i;
 
 	i = -1;
 	while (envp[++i])
 	{
-		env = ft_strnstr(envp[i], "PATH", ft_strlen(envp[i]));
-		if (env != NULL)
-			return (env + 5);
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+			return (envp[i] + 5);
 	}
 	return (NULL);
 }
@@ -51,7 +49,6 @@ char	*parse_env(char *envp[], char *cmd)
 			return (path);
 	}
 	free(bins);
-	free(path);
 	return (NULL);
 }
 
