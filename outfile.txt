@@ -1,1 +1,2 @@
-      11$
+PING google.com (108.177.15.113): 56 data bytes
+--- google.com ping statistics ---
