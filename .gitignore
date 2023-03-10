@@ -2,3 +2,4 @@ pipex
 .vscode
 a.out
 */*.o
+*/*.txt
