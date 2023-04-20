@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/10 19:21:21 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/25 23:43:33 by mgama            ###   ########.fr       */
+/*   Updated: 2023/04/19 16:03:15 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	exit_with_code(t_commands *commands, int code)
 		}
 		free(commands->command_list);
 	}
-	i = 0;
 	if (code > 0)
 		perror("An error occurred while executing the program");
 	exit(code);
