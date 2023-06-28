@@ -6,7 +6,7 @@
 /*   By: mgama <mgama@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/13 19:28:38 by mgama             #+#    #+#             */
-/*   Updated: 2023/01/11 19:08:52 by mgama            ###   ########.fr       */
+/*   Updated: 2023/06/21 03:21:54 by mgama            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static char	**free_tab(char **tab)
 	i = 0;
 	while (tab[i])
 	{
-		free(tab[i]);
+		free(tab[i++]);
 	}
 	free(tab);
 	return (0);
