@@ -3,3 +3,5 @@ pipex
 a.out
 */*.o
 */*.txt
+.DS_Store
+*/.DS_Store
